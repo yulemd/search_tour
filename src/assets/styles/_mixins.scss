@@ -1,0 +1,11 @@
+@mixin focus-ring {
+  outline: 2px solid $primary;
+  outline-offset: 2px;
+}
+
+@mixin hover-bg {
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}

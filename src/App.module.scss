@@ -1,0 +1,14 @@
+@use "@styles/variables" as *;
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.title {
+  width: 100%;
+  color: $primary;
+  font-size: 2rem;
+  text-align: center;
+}
