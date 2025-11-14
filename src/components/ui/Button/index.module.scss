@@ -1,0 +1,76 @@
+%defaultButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: transparent;
+  color: #145966;
+  width: fit-content;
+  transition: background-color 0.3s, color 0.3s;
+
+  outline: none;
+  border: none;
+  box-shadow: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  &:hover {
+    background-color: #14596617;
+  }
+
+  &:active {
+    background-color: #14596640;
+  }
+}
+
+.defaultButton {
+  @extend %defaultButton;
+}
+
+.image {
+  height: 13px;
+  width: 13px;
+}
+
+.primaryButton {
+  @extend %defaultButton;
+  width: 100%;
+  background-color: #145966;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #0b3a42ab;
+  }
+
+  &:active {
+    background-color: #14586636;
+  }
+}
+
+.secondaryButton {
+  @extend %defaultButton;
+  background-color: #ffffff;
+  border: 1px solid #ddd; // легка рамка, якщо потрібно
+  font-size: 20px;
+  padding: 10px 50px;
+  color: #145966;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &:active {
+    background-color: #e0e0e0;
+  }
+}

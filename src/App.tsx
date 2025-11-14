@@ -1,11 +1,7 @@
-import styles from './App.module.scss';
+import { SearchScreen } from './screens';
 
 function App() {
-  return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>Search Tour</h1>
-    </main>
-  );
+  return <SearchScreen />;
 }
 
 export default App;

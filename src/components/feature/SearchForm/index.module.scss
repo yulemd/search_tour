@@ -1,0 +1,83 @@
+@use "@styles/variables" as *;
+
+.trigger {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+}
+
+.popover {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 160px;
+  z-index: 50;
+  font-size: 0.875rem;
+  animation: fadeIn 0.15s ease-out;
+
+  &[data-state="open"] {
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: fadeOut 0.15s ease-in;
+  }
+}
+
+.item {
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  transition: background-color 0.15s;
+
+  &:hover,
+  &[data-highlighted] {
+    background-color: rgba($primary, 0.1);
+    outline: none;
+  }
+
+  &:focus-visible {
+    background-color: rgba($primary, 0.1);
+    outline: none;
+  }
+
+  &[data-disabled] {
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+.separator {
+  height: 1px;
+  background: #eee;
+  margin: 4px 0;
+}
+
+.arrow {
+  fill: white;
+  stroke: #ddd;
+  stroke-width: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.95); }
+}

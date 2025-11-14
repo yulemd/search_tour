@@ -2,13 +2,14 @@
 
 .container {
   max-width: 1200px;
+  min-height: 100vh;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0;
 }
 
 .title {
   width: 100%;
   color: $primary;
-  font-size: 2rem;
   text-align: center;
+  padding: 40px;
 }

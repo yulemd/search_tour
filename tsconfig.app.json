@@ -25,5 +25,5 @@
       "@components/*": ["src/components/*"]
     }
   },
-  "include": ["src"]
+  "include": ["api.d.ts", "src"]
 }
