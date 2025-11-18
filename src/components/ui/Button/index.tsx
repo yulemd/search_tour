@@ -10,15 +10,24 @@ export const Button: FC<ButtonPropsType> = ({
   id,
   onClick,
   title,
+  type = 'button',
   variant = 'default',
   ...props
 }) => {
   const ButtonComponent = ButtonVariants[variant];
 
-  const onClickHandler = () => onClick(id);
+  const onClickHandler = () => {
+    if (onClick) {
+      onClick(id);
+    }
+  };
 
   return (
-    <ButtonComponent onClick={onClickHandler} {...props}>
+    <ButtonComponent
+      type={type}
+      onClick={type !== 'submit' ? onClickHandler : () => {}}
+      {...props}
+    >
       {!!title && title}
       {!!icon && <Image src={icon} />}
       {children}

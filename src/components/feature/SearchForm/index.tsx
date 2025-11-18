@@ -19,17 +19,17 @@ export const SearchForm: FC<SearchFormProps> = ({
   ...props
 }) => (
   <Layout variant="main">
-    <FormContainer>
+    <FormContainer onSubmit={props.onSubmit}>
       <Layout variant="default">
         <Label variant="heading">{heading}</Label>
       </Layout>
       <Input variant="dropdown" {...props} />
       <Button
         id="search_button"
+        onClick={() => {}}
         variant="primary"
         title={buttonLabel}
         type="submit"
-        onClick={() => {}}
       />
     </FormContainer>
   </Layout>

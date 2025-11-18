@@ -5,6 +5,7 @@ import { HeadingLabel } from './HeadingLabel';
 import { InputLabel } from './InputLabel';
 
 import type { LabelPropsType } from './types';
+import { ErrorLabel } from './ErrorLabel';
 
 export const Label: FC<LabelPropsType> = ({ children, variant = 'input' }) => {
   const LabelComponent = LabelComponents[variant];
@@ -13,6 +14,7 @@ export const Label: FC<LabelPropsType> = ({ children, variant = 'input' }) => {
 };
 const LabelComponents = {
   default: DefaultLabel,
+  error: ErrorLabel,
   heading: HeadingLabel,
   input: InputLabel,
 };

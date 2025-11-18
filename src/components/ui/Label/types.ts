@@ -4,4 +4,4 @@ export interface LabelPropsType extends PropsWithChildren {
   variant?: LabelVariantType;
 }
 
-export type LabelVariantType = 'default' | 'heading' | 'input';
+export type LabelVariantType = 'default' | 'error' | 'heading' | 'input';
