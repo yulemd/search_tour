@@ -39,10 +39,7 @@ declare module './api' {
 
   export type PricesMap = Record<string, PriceOffer>;
 
-  export type GeoEntity =
-    | (Country & { type: 'country' })
-    | (City & { type: 'city' })
-    | (Hotel & { type: 'hotel' });
+  export type GeoEntity = Country | City | Hotel;
 
   export type GeoResponse = Record<string, GeoEntity>;
 

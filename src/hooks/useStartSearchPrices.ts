@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { startSearchPrices, type StartSearchResponse } from '../../api';
 
-export function useStartSearchPrices(
-  countryId: string,
-  setEnabled: React.Dispatch<React.SetStateAction<boolean>>,
-) {
+export function useStartSearchPrices(countryId: string) {
   const [data, setData] = useState<StartSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,35 +12,44 @@ export function useStartSearchPrices(
       return;
     }
 
-    setData(null);
+    let isActive = true;
     setLoading(true);
     setError(null);
+    setData(null);
 
     (async () => {
       try {
         const response = await startSearchPrices(countryId);
-
         const json = await response.json();
 
-        const waitUntil = Date.parse(json.waitUntil ?? 0);
+        const waitUntilTimestamp = json.waitUntil
+          ? Date.parse(json.waitUntil)
+          : Date.now() + 1000;
 
-        setData({
-          token: json.token,
-          waitUntil: `${waitUntil}`,
-        });
+        if (isActive) {
+          setData({
+            token: json.token,
+            waitUntil: `${waitUntilTimestamp}`,
+          });
+        }
       } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        setError(`Failed to start search: ${err}`);
+        if (isActive) {
+          const msg = err instanceof Error ? err.message : String(err);
+          setError(`Failed to start search: ${msg}`);
+        }
       } finally {
-        setLoading(false);
-        setEnabled(true);
+        if (isActive) setLoading(false);
       }
     })();
-  }, [countryId, setEnabled]);
+
+    return () => {
+      isActive = false;
+    };
+  }, [countryId]);
 
   return {
-    startSearch: data,
-    loading,
-    error,
+    startSearchData: data,
+    isStarting: loading,
+    startError: error,
   };
 }

@@ -1,0 +1,11 @@
+@use "@styles/variables" as *;
+
+.image {
+  width: 100%;
+}
+
+.flag {
+  height: 20px;
+  border-radius: 4px;
+  margin: 0 8px -4px 0;
+}

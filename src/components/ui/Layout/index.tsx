@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 
+import { CardLayout } from './CardLayout';
 import { DefaultLayout } from './DefaultLayout';
 import { HeadingLayout } from './HeadingLayout';
 import { InputLayout } from './InputLayout';
@@ -18,8 +19,9 @@ export const Layout: FC<LayoutPropsType> = ({
 };
 
 const LayoutComponents = {
-  input: InputLayout,
+  card: CardLayout,
   default: DefaultLayout,
   heading: HeadingLayout,
+  input: InputLayout,
   main: MainLayout,
 };

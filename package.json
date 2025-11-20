@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "classnames": "^2.5.1",
+    "mobx": "^6.15.0",
+    "mobx-react-lite": "^4.1.1",
+    "mobx-state-tree": "^7.0.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

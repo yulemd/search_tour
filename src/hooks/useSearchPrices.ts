@@ -1,52 +1,79 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getSearchPrices, type PriceOffer } from '../../api';
 
-type SearchResultsState = {
+export type SearchResultsState = {
   results: PriceOffer[] | null;
   isFinished: boolean;
 };
 
 const searchPricesCache: Record<string, SearchResultsState> = {};
 
+interface UseSearchPricesProps {
+  token?: string;
+  waitUntil?: string | number;
+  enabled?: boolean;
+}
+
 export function useSearchPrices({
   token = '',
   waitUntil = '',
   enabled = true,
-}) {
-  const cached = enabled && token ? (searchPricesCache[token] ?? null) : null;
+}: UseSearchPricesProps) {
+  const hasToken = !!token;
+  const shouldFetch = enabled && hasToken;
+  const cachedData = shouldFetch ? (searchPricesCache[token] ?? null) : null;
 
-  const [data, setData] = useState<SearchResultsState | null>(cached);
-  const [loading, setLoading] = useState(!cached && !!token);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<{
+    data: SearchResultsState | null;
+    fetchedToken: string | null;
+    error: string | null;
+  }>({
+    data: cachedData,
+    fetchedToken: cachedData ? token : null,
+    error: null,
+  });
 
   useEffect(() => {
-    if (!enabled) {
-      setData(null);
-      setLoading(false);
-      setError(null);
+    const tokenMismatch = token && state.fetchedToken !== token;
+
+    if (shouldFetch && tokenMismatch && !cachedData) {
+      setState((prev) => ({
+        ...prev,
+        data: null,
+        error: null,
+      }));
     }
-  }, [enabled]);
 
-  const retryCount = useRef(0);
+    if (shouldFetch && cachedData && state.fetchedToken !== token) {
+      setState({
+        data: cachedData,
+        fetchedToken: token,
+        error: null,
+      });
+    }
+  }, [token, shouldFetch, cachedData, state.fetchedToken]);
 
-  const waitUntilRef = useRef(Number(waitUntil));
+  const isDataStale = state.fetchedToken !== token;
+
+  const loading = shouldFetch && isDataStale;
+
+  const displayedData = cachedData || state.data || null;
+  const displayedError = loading ? null : state.error;
 
   useEffect(() => {
-    if (!enabled || !token || !waitUntil) return;
-
-    waitUntilRef.current = Number(waitUntil);
-
-    if (cached) {
-      setData(cached);
-      setLoading(false);
+    if (!shouldFetch || cachedData) {
       return;
     }
 
     let isActive = true;
+    const waitUntilTime = Number(waitUntil);
+    const retryCount = { current: 0 };
 
-    async function poll() {
+    const poll = async () => {
+      if (!isActive) return;
+
       const now = Date.now();
-      const waitTime = waitUntilRef.current - now;
+      const waitTime = waitUntilTime - now;
 
       if (waitTime > 0) {
         await new Promise((res) => setTimeout(res, waitTime));
@@ -55,53 +82,71 @@ export function useSearchPrices({
       if (!isActive) return;
 
       try {
-        setLoading(true);
-        setError(null);
-
         const response = await getSearchPrices(token);
-
         const json = await response.json();
 
-        const success = !!Object.values(json).length;
+        if (!isActive) return;
 
-        if (!success) {
-          const nextTime = Date.now() + (json.waitUntil ?? 1000);
-          waitUntilRef.current = nextTime;
+        const hasResults = json.prices && Object.keys(json.prices).length > 0;
+
+        let isFinished = json.isFinished || hasResults;
+
+        const hasWaitInstruction =
+          json.waitUntil && Number(json.waitUntil) > Date.now();
+
+        if (!isFinished && hasWaitInstruction) {
+          const nextDelay = json.waitUntil || 1000;
+          await new Promise((res) => setTimeout(res, nextDelay));
           return poll();
         }
 
-        if (success) {
+        if (!isFinished && !hasWaitInstruction) {
+          isFinished = true;
+        }
+
+        if (isFinished) {
           const final: SearchResultsState = {
-            results: Object.values(json.prices) ?? [],
+            results: Object.values(json.prices || {}),
             isFinished: true,
           };
 
-          searchPricesCache[token] = final;
-
-          setData(final);
-          setLoading(false);
-          return;
+          setState({
+            data: final,
+            fetchedToken: token,
+            error: null,
+          });
         }
-        throw new Error(json.message ?? 'Server returned error');
       } catch (err) {
+        if (!isActive) return;
+
         if (err instanceof DOMException && err.name === 'AbortError') return;
 
         if (retryCount.current < 2) {
           retryCount.current++;
+          await new Promise((res) =>
+            setTimeout(res, 1000 * retryCount.current),
+          );
           return poll();
         }
 
-        setError(`Failed to fetch results: ${err}`);
-        setLoading(false);
+        setState((prev) => ({
+          ...prev,
+          fetchedToken: token,
+          error: err instanceof Error ? err.message : 'Unknown error',
+        }));
       }
-    }
+    };
 
     poll();
 
     return () => {
       isActive = false;
     };
-  }, [cached, enabled, token, waitUntil]);
+  }, [token, shouldFetch, waitUntil, cachedData]);
 
-  return { data, loading, error };
+  return {
+    data: displayedData,
+    loading,
+    error: displayedError,
+  };
 }

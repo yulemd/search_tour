@@ -1,34 +1,49 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { getOptionType } from '@/helpers/getOptionType';
-import { useCountries } from '@/hooks/useCountries';
-import { useSearchGeo } from '@/hooks/useSearchGeo';
+import { getSearchPricesStatuses, getToursToRender } from '@/helpers';
 import { useSearchPrices } from '@/hooks/useSearchPrices';
 import { useStartSearchPrices } from '@/hooks/useStartSearchPrices';
+import { useStore } from '@/models';
 
 import type { GeoEntity } from 'api';
-import type { OnChangeType, SearchPricesStatusType } from './types';
+import type { OnChangeType } from './types';
 
 export const useSearchScreen = () => {
+  const root = useStore();
+  const { countries, hotels, geoEntities, tours } = root;
+
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
-  const [enabled, setEnabled] = useState(false);
 
-  const { countries } = useCountries();
+  const countriesListExists = root.countriesListExists();
+  const geoEntitiesListExists = root.geoEntitiesListExists();
 
-  const countriesList = Object.values(countries ?? {}).reduce(
-    (acc, country) => {
-      if (country.id) acc.push({ ...country, type: 'country' as const });
-      return acc;
-    },
-    [] as GeoEntity[],
-  );
+  const retrieveData = useCallback(() => {
+    root.retrieveData();
+  }, [root]);
 
-  const { searchGeoResults } = useSearchGeo(value);
-  const searchGeoResultsList = Object.values(searchGeoResults ?? {}).map(
-    (item) => ({ ...item, type: getOptionType(item) }),
-  ) as GeoEntity[];
+  const countriesList = countries.getList() as GeoEntity[];
+
+  useEffect(() => {
+    if (countriesListExists) {
+      return;
+    }
+    retrieveData();
+  }, [countriesListExists, retrieveData]);
+
+  const retrieveGeoEntities = useCallback(() => {
+    geoEntities.retrieveList(value);
+  }, [geoEntities, value]);
+
+  const searchGeoResultsList = geoEntities.getList() as GeoEntity[];
+
+  useEffect(() => {
+    if (value && geoEntitiesListExists) {
+      return;
+    }
+    retrieveGeoEntities();
+  }, [geoEntitiesListExists, value, retrieveGeoEntities]);
 
   const filtered = searchGeoResultsList.filter((item) =>
     item.name.toLowerCase().includes(value.toLowerCase()),
@@ -39,55 +54,69 @@ export const useSearchScreen = () => {
       ? filtered
       : countriesList;
 
-  const { startSearch, loading } = useStartSearchPrices(
-    selectedCountryId,
-    setEnabled,
-  );
+  const { startSearchData, isStarting, startError } =
+    useStartSearchPrices(selectedCountryId);
+
+  const pollingEnabled = !!startSearchData?.token && !isStarting;
 
   const {
     data: searchData,
     loading: searchPricesLoading,
     error: searchPricesError,
   } = useSearchPrices({
-    token: loading ? '' : startSearch?.token,
-    waitUntil: startSearch?.waitUntil,
-    enabled,
+    token: startSearchData?.token,
+    waitUntil: startSearchData?.waitUntil,
+    enabled: pollingEnabled,
   });
 
-  const searchPricesStatuses: SearchPricesStatusType = useMemo(() => {
-    if (!value) {
-      return {
-        loading: false,
-        error: false,
-        emptyState: false,
-      };
+  useEffect(() => {
+    if (searchData) {
+      tours.addList(searchData.results);
     }
+  }, [searchData, tours]);
 
-    const error = !!searchPricesError;
-    const loading =
-      (searchPricesLoading || Boolean(selectedCountryId)) &&
-      !error &&
-      !searchData?.isFinished;
+  const retrieveHotels = useCallback(() => {
+    hotels.retrieveList(selectedCountryId);
+  }, [hotels, selectedCountryId]);
 
-    const sameValue =
-      countriesList.find(({ id }) => id === selectedCountryId)?.name === value;
+  const hotelsList = hotels.getList();
+  const toursList = tours.getList();
 
-    const emptyState =
-      enabled &&
-      sameValue &&
-      searchData?.isFinished &&
-      !searchData?.results?.length;
+  useEffect(() => {
+    if (!selectedCountryId) {
+      return;
+    }
+    retrieveHotels();
+  }, [selectedCountryId, retrieveHotels]);
 
-    return { loading, error, emptyState };
-  }, [
-    countriesList,
-    enabled,
-    value,
-    searchPricesLoading,
-    searchPricesError,
-    searchData,
-    selectedCountryId,
-  ]);
+  const toursToRender = useMemo(
+    () => getToursToRender(toursList, hotelsList, countries),
+    [toursList, hotelsList, countries],
+  );
+
+  const searchPricesStatuses = useMemo(
+    () =>
+      getSearchPricesStatuses({
+        value,
+        searchPricesError: searchPricesError || startError,
+        searchPricesLoading: searchPricesLoading || isStarting,
+        selectedCountryId,
+        searchData,
+        countriesList,
+        enabled: pollingEnabled,
+      }),
+    [
+      countriesList,
+      isStarting,
+      pollingEnabled,
+      searchPricesLoading,
+      searchPricesError,
+      searchData,
+      selectedCountryId,
+      startError,
+      value,
+    ],
+  );
 
   const onChangeInput: OnChangeType = ({ target: { value: changedValue } }) => {
     setValue(changedValue);
@@ -133,8 +162,7 @@ export const useSearchScreen = () => {
     const { id: countryId } = countriesList.find((c) => c.name === value) || {
       id: '',
     };
-    console.info('SUBMITTED!');
-    setEnabled(false);
+
     setSelectedCountryId(`${countryId}`);
   }, [countriesList, value]);
 
@@ -150,6 +178,7 @@ export const useSearchScreen = () => {
     refs: { inputRef, dropdownRef },
     searchPricesStatuses,
     setValue,
+    toursToRender,
     value,
   };
 };

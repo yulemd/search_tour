@@ -1,6 +1,8 @@
 import { SearchForm } from '@/components/feature/SearchForm';
+import { TourCard } from '@/components/feature/TourCard';
 import { Label } from '@/components/ui/Label';
 import { Layout } from '@/components/ui/Layout';
+import { ToursContainer } from '@/components/ui/ToursContainer';
 import { getSearchPricesStatus } from '@/helpers/getSearchPricesStatus';
 import type { FC } from 'react';
 import styles from './template.module.scss';
@@ -8,6 +10,7 @@ import type { SearchScreenProps } from './types';
 
 export const SearchScreenTemplate: FC<SearchScreenProps> = ({
   searchPricesStatuses,
+  toursToRender = [],
   ...props
 }) => {
   const status = getSearchPricesStatus(searchPricesStatuses);
@@ -19,6 +22,15 @@ export const SearchScreenTemplate: FC<SearchScreenProps> = ({
       <SearchForm {...props} />
 
       <Layout>{status && <Label variant="error">{status}</Label>}</Layout>
+      {!!toursToRender.length && (
+        <Layout variant="main">
+          <ToursContainer>
+            {toursToRender.map((hotel) => (
+              <TourCard key={hotel.hotelId} props={hotel} />
+            ))}
+          </ToursContainer>
+        </Layout>
+      )}
     </main>
   );
 };

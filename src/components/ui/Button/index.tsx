@@ -47,6 +47,10 @@ const SecondaryButton = (
   props: React.ButtonHTMLAttributes<HTMLButtonElement>,
 ) => <button className={styles.secondaryButton} {...props} />;
 
+const LinkButton = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+  <button className={styles.linkButton} {...props} />
+);
+
 const Image = (props: { src: string }) => (
   <img className="image" src={props.src} alt="button icon" />
 );
@@ -55,4 +59,5 @@ const ButtonVariants = {
   default: DefaultButton,
   primary: PrimaryButton,
   secondary: SecondaryButton,
+  link: LinkButton,
 };

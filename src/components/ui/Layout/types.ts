@@ -4,4 +4,9 @@ export interface LayoutPropsType extends PropsWithChildren {
   variant?: LayoutVariantType;
 }
 
-export type LayoutVariantType = 'default' | 'heading' | 'input' | 'main';
+export type LayoutVariantType =
+  | 'card'
+  | 'default'
+  | 'heading'
+  | 'input'
+  | 'main';

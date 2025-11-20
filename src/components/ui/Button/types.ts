@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 
-export type ButtonVariantType = 'default' | 'primary' | 'secondary';
+export type ButtonVariantType = 'default' | 'primary' | 'secondary' | 'link';
 
 export interface ButtonPropsType extends PropsWithChildren {
   icon?: string;
