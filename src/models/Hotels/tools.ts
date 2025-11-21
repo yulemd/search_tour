@@ -1,24 +1,16 @@
-import type { HotelsDataType, HotelsSnapshotInType } from './types';
-
-import { transformDataToCountry } from '../Country/tools';
+import type { GeoEntity } from 'api';
+import type { HotelsDataType } from './types';
 
 type TransformDataToModelType = (
   data: HotelsDataType,
-) => Promise<Partial<HotelsSnapshotInType>>;
+) => Promise<Partial<GeoEntity[]>>;
 
-export const transformDataToHotels: TransformDataToModelType = async ({
-  records = [],
-}) => {
-  const transformedRecords = await Promise.all(
-    records.map(async (record) => {
-      const transformedRecordsItem = await transformDataToCountry(record);
-      return { [record.id]: transformedRecordsItem };
-    }),
-  );
-  return {
-    data: transformedRecords.reduce(
-      (acc, record) => ({ ...acc, ...record }),
-      {},
-    ),
-  };
+export const transformDataToHotels: TransformDataToModelType = async (
+  hotelsMap,
+) => {
+  const hotelsList = Object.values(hotelsMap ?? {}).reduce((acc, hotel) => {
+    if (hotel.id) acc.push({ ...hotel, type: 'country' as const });
+    return acc;
+  }, [] as GeoEntity[]);
+  return hotelsList;
 };

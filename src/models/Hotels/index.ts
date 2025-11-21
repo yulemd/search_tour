@@ -1,4 +1,4 @@
-import { applySnapshot, flow, getSnapshot, types } from 'mobx-state-tree';
+import { applySnapshot, flow, types } from 'mobx-state-tree';
 
 import { getHotelsRequest } from './network';
 
@@ -7,34 +7,24 @@ import { Hotel } from '../Hotel';
 export const Hotels = types
   .model('Hotels', {
     id: types.identifier,
-    data: types.map(Hotel),
+    data: types.array(Hotel),
   })
   .actions((self) => ({
-    retrieveList: flow(function* retrieveHotels(timeStamp: string) {
-      const requestData = yield getHotelsRequest(timeStamp);
-
-      const snapshot = getSnapshot(Hotels.create({ ...self, ...requestData }));
-
-      if (snapshot.id) {
-        applySnapshot(self, snapshot);
-      }
+    retrieveList: flow(function* retrieveHotels(countryId: string) {
+      const requestData = yield getHotelsRequest(countryId);
+      applySnapshot(self.data, requestData);
     }),
     retrieveItem: (id: string) => {
       const item = Hotel.create({ id });
-      self.data.put(item);
+      self.data.push(item);
       item.retrieveItem();
     },
   }))
   .views((self) => {
     const getItem = (id: string) =>
-      self.data.get(id) || Hotel.create({ id: '-1' });
-
-    // const getItemByName = (name: string) =>
-    //   getList().find((hotel) => hotel.name === name) ||
-    //   Hotel.create({ id: '-1' })
+      self.data.find(({ id: itemId }) => id === itemId);
 
     const getList = () => [...self.data.values()];
 
     return { getItem, getList };
-    // return { getItem, getItemByName, getList }
   });

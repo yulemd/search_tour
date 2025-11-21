@@ -9,7 +9,7 @@ import type { OnChangeType, SearchPricesStatusType } from './types';
 
 export const useSearchScreen = () => {
   const root = useStore();
-  const { countries, geoEntities } = root;
+  const { countries, hotels, geoEntities, tours } = root;
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
@@ -18,6 +18,7 @@ export const useSearchScreen = () => {
 
   const countriesListExists = root.countriesListExists();
   const geoEntitiesListExists = root.geoEntitiesListExists();
+  const hotelsListExists = root.hotelsListExists();
 
   const retrieveData = useCallback(() => {
     root.retrieveData();
@@ -68,6 +69,26 @@ export const useSearchScreen = () => {
     waitUntil: startSearch?.waitUntil,
     enabled,
   });
+
+  if (searchData) {
+    tours.addList(searchData.results);
+  }
+
+  const retrieveHotels = useCallback(() => {
+    hotels.retrieveList(selectedCountryId);
+  }, [hotels, selectedCountryId]);
+
+  const hotelsList = hotels.getList();
+
+  useEffect(() => {
+    if (selectedCountryId && hotelsListExists) {
+      return;
+    }
+    retrieveHotels();
+  }, [hotelsListExists, selectedCountryId, retrieveHotels]);
+
+  console.info('-------------------------------', tours.getList());
+  console.info('+++++++++++++++++++++++++++++++', hotelsList);
 
   const searchPricesStatuses: SearchPricesStatusType = useMemo(() => {
     if (!value) {
@@ -152,7 +173,7 @@ export const useSearchScreen = () => {
     setEnabled(false);
     setSelectedCountryId(`${countryId}`);
   }, [countriesList, value]);
-
+  console.info({ searchData });
   return {
     closeDropdown,
     onChangeInput,

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { getSearchPrices, type PriceOffer } from '../../api';
 
-type SearchResultsState = {
+export type SearchResultsState = {
   results: PriceOffer[] | null;
   isFinished: boolean;
 };

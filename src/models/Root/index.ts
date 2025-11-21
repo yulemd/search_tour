@@ -11,15 +11,18 @@ import {
 import { Countries } from '../Countries';
 import { GeoEntities } from '../GeoEntities';
 import { Hotels } from '../Hotels';
+import { Tours } from '../Tours';
+
 import { getRootState, saveRootState } from '../storage';
 import { type RootSnapshotOutType, type RootType } from './types';
 
 export const Root = types
   .model({
     countries: types.optional(Countries, { id: 'countries' }),
-    hotels: types.optional(Hotels, { id: 'hotels' }),
     geoEntities: types.optional(GeoEntities, { id: 'geoEntities' }),
+    hotels: types.optional(Hotels, { id: 'hotels' }),
     storeLoaded: types.optional(types.boolean, false),
+    tours: types.optional(Tours, { id: 'tours' }),
   })
   .actions((self) => ({
     loadStore: () => {
@@ -41,8 +44,10 @@ export const Root = types
   .views((self) => {
     const countriesListExists = () => !!self.countries.data.length;
     const geoEntitiesListExists = () => !!self.geoEntities.data.length;
+    const hotelsListExists = () => !!self.hotels.data.length;
     return {
       countriesListExists,
+      hotelsListExists,
       geoEntitiesListExists,
     };
   });

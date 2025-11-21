@@ -2,11 +2,9 @@ import type { Instance, SnapshotIn, SnapshotOut } from 'mobx-state-tree';
 
 import { Hotels } from '.';
 
-import type { CountryDataType } from '../Country/types';
+import type { HotelsMap } from 'api';
 
-export type HotelsDataType = {
-  records: CountryDataType[];
-};
+export type HotelsDataType = HotelsMap;
 
 export type HotelsType = Instance<typeof Hotels>;
 export type HotelsSnapshotInType = SnapshotIn<typeof Hotels>;
