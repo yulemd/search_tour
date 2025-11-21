@@ -8,7 +8,11 @@ export const Hotel = types
   .model({
     id: types.identifier,
     name: types.optional(types.string, ''),
-    flag: types.optional(types.string, ''),
+    img: types.optional(types.string, ''),
+    cityId: types.optional(types.number, -1),
+    cityName: types.optional(types.string, ''),
+    countryId: types.optional(types.string, ''),
+    countryName: types.optional(types.string, ''),
     type: types.optional(GeoSearchOptionType, 'hotel'),
   })
   .actions((self) => ({

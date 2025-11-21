@@ -9,7 +9,7 @@ export const transformDataToCountry: TransformDataToModelType = ({
   name,
   flag,
 }) => ({
-  id,
+  id: String(id),
   name,
   flag,
   type: 'country',

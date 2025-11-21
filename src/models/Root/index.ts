@@ -8,21 +8,17 @@ import {
   types,
 } from 'mobx-state-tree';
 
-import { City } from '../City';
 import { Countries } from '../Countries';
-import { Country } from '../Country';
-import { Hotel } from '../Hotel';
+import { GeoEntities } from '../GeoEntities';
 import { Hotels } from '../Hotels';
 import { getRootState, saveRootState } from '../storage';
 import { type RootSnapshotOutType, type RootType } from './types';
-
-export const GeoSearchModels = types.array(types.union(Country, City, Hotel));
 
 export const Root = types
   .model({
     countries: types.optional(Countries, { id: 'countries' }),
     hotels: types.optional(Hotels, { id: 'hotels' }),
-    geoSearch: types.optional(GeoSearchModels, []),
+    geoEntities: types.optional(GeoEntities, { id: 'geoEntities' }),
     storeLoaded: types.optional(types.boolean, false),
   })
   .actions((self) => ({
@@ -44,8 +40,10 @@ export const Root = types
   }))
   .views((self) => {
     const countriesListExists = () => !!self.countries.data.length;
+    const geoEntitiesListExists = () => !!self.geoEntities.data.length;
     return {
       countriesListExists,
+      geoEntitiesListExists,
     };
   });
 

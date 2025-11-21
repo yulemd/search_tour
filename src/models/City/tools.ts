@@ -6,7 +6,7 @@ export const transformDataToCity: TransformDataToModelType = ({
   id,
   name,
 }) => ({
-  id,
+  id: String(id),
   name,
   type: 'city',
 });

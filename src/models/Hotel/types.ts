@@ -6,7 +6,11 @@ import type { OptionType } from '../Root/types';
 export type HotelDataType = {
   id: string;
   name: string;
-  flag: string;
+  img: string;
+  cityId: number;
+  cityName: string;
+  countryId: string;
+  countryName: string;
   type: OptionType;
 };
 

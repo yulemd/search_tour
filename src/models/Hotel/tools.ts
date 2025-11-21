@@ -5,10 +5,8 @@ type TransformDataToModelType = (data: HotelDataType) => HotelSnapshotInType;
 export const transformDataToHotel: TransformDataToModelType = ({
   id,
   name,
-  flag,
 }) => ({
-  id,
+  id: String(id),
   name,
-  flag,
   type: 'hotel',
 });
