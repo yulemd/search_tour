@@ -1,24 +1,19 @@
-import type { CountriesDataType, CountriesSnapshotInType } from './types';
-
-import { transformDataToCountry } from '../Country/tools';
+import type { GeoEntity } from 'api';
+import type { CountriesDataType } from './types';
 
 type TransformDataToModelType = (
   data: CountriesDataType,
-) => Promise<Partial<CountriesSnapshotInType>>;
+) => Promise<Partial<GeoEntity[]>>;
 
-export const transformDataToCountries: TransformDataToModelType = async ({
-  records = [],
-}) => {
-  const transformedRecords = await Promise.all(
-    records.map(async (record) => {
-      const transformedRecordsItem = await transformDataToCountry(record);
-      return { [record.id]: transformedRecordsItem };
-    }),
+export const transformDataToCountries: TransformDataToModelType = async (
+  countriesMap,
+) => {
+  const countriesList = Object.values(countriesMap ?? {}).reduce(
+    (acc, country) => {
+      if (country.id) acc.push({ ...country, type: 'country' as const });
+      return acc;
+    },
+    [] as GeoEntity[],
   );
-  return {
-    data: transformedRecords.reduce(
-      (acc, record) => ({ ...acc, ...record }),
-      {},
-    ),
-  };
+  return countriesList;
 };

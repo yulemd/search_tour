@@ -1,9 +1,7 @@
-import { types } from 'mobx-state-tree'
-
-import { Photo } from '../Photo'
+import { types } from 'mobx-state-tree';
 
 export const Image = types.model({
   id: types.identifier,
-  photo: types.maybe(Photo),
   name: types.optional(types.string, ''),
-})
+  url: types.optional(types.string, ''),
+});

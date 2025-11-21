@@ -1,6 +1,5 @@
-import type { ChangeEventHandler } from 'react';
-
 import type { GeoEntity } from 'api';
+import type { ChangeEventHandler } from 'react';
 
 export type SearchPricesStatusType = {
   loading: boolean | undefined;

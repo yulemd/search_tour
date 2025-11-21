@@ -1,21 +1,13 @@
-import { Instance, SnapshotIn, SnapshotOut } from 'mobx-state-tree'
+import type { Instance, SnapshotIn, SnapshotOut } from 'mobx-state-tree';
 
-import { Image } from '.'
+import { Image } from '.';
 
 export type ImageDataType = {
-  id: string
-  fields: {
-    photos: [
-      {
-        id: string
-        type: string
-        url: string
-      },
-    ]
-    name: string
-  }
-}
+  id: string;
+  url: string;
+  name: string;
+};
 
-export interface ImageType extends Instance<typeof Image> {}
-export interface ImageSnapshotInType extends SnapshotIn<typeof Image> {}
-export interface ImageSnapshotOutType extends SnapshotOut<typeof Image> {}
+export type ImageType = Instance<typeof Image>;
+export type ImageSnapshotInType = SnapshotIn<typeof Image>;
+export type ImageSnapshotOutType = SnapshotOut<typeof Image>;

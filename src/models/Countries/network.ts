@@ -10,6 +10,5 @@ export const getCountriesRequest: GetRequestType = async () => {
   const data = transformDataToCountries(
     requestData as unknown as CountriesDataType,
   );
-
   return data;
 };

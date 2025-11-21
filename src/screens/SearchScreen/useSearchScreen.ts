@@ -1,34 +1,39 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { getOptionType } from '@/helpers/getOptionType';
-import { useCountries } from '@/hooks/useCountries';
 import { useSearchGeo } from '@/hooks/useSearchGeo';
 import { useSearchPrices } from '@/hooks/useSearchPrices';
 import { useStartSearchPrices } from '@/hooks/useStartSearchPrices';
 
+import { useStore } from '@/models';
 import type { GeoEntity } from 'api';
 import type { OnChangeType, SearchPricesStatusType } from './types';
 
 export const useSearchScreen = () => {
+  const root = useStore();
+  const { countries } = root;
+
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
   const [enabled, setEnabled] = useState(false);
 
-  const { countries } = useCountries();
-
-  const countriesList = Object.values(countries ?? {}).reduce(
-    (acc, country) => {
-      if (country.id) acc.push({ ...country, type: 'country' as const });
-      return acc;
-    },
-    [] as GeoEntity[],
-  );
+  const countriesListExists = root.countriesListExists();
+  const retrieveData = useCallback(() => {
+    root.retrieveData();
+  }, [root]);
+  const countriesList = countries.getList() as GeoEntity[];
+  useEffect(() => {
+    if (countriesListExists) {
+      return;
+    }
+    retrieveData();
+  }, [countriesListExists, retrieveData]);
 
   const { searchGeoResults } = useSearchGeo(value);
   const searchGeoResultsList = Object.values(searchGeoResults ?? {}).map(
     (item) => ({ ...item, type: getOptionType(item) }),
-  ) as GeoEntity[];
+  );
 
   const filtered = searchGeoResultsList.filter((item) =>
     item.name.toLowerCase().includes(value.toLowerCase()),

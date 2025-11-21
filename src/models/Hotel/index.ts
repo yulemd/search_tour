@@ -2,11 +2,14 @@ import { applySnapshot, flow, getSnapshot, types } from 'mobx-state-tree';
 
 import { getHotelRequest } from './network';
 
+import { GeoSearchOptionType } from '../Root/types';
+
 export const Hotel = types
   .model({
     id: types.identifier,
     name: types.optional(types.string, ''),
     flag: types.optional(types.string, ''),
+    type: types.optional(GeoSearchOptionType, 'hotel'),
   })
   .actions((self) => ({
     retrieveItem: flow(function* retrieveItem() {

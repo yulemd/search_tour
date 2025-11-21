@@ -1,16 +1,13 @@
-import { transformDataToPhoto } from '../Photo/tools'
-import { ImageDataType, ImageSnapshotInType } from './types'
+import type { ImageDataType, ImageSnapshotInType } from './types';
 
-type TransformDataToModelType = (
-  data: ImageDataType,
-  timeStamp: string,
-) => ImageSnapshotInType
+type TransformDataToModelType = (data: ImageDataType) => ImageSnapshotInType;
 
-export const transformDataToImage: TransformDataToModelType = (
-  { id, fields: { photos: [photo] = [], ...fields } },
-  timeStamp,
-) => ({
+export const transformDataToImage: TransformDataToModelType = ({
   id,
-  photo: transformDataToPhoto(photo, timeStamp),
-  ...fields,
-})
+  name,
+  url,
+}) => ({
+  id,
+  name,
+  url,
+});
