@@ -1,12 +1,13 @@
-import type { HotelDataType, HotelSnapshotInType } from './types';
+import type { Hotel } from 'api';
+import type { HotelSnapshotInType } from './types';
 
-type TransformDataToModelType = (data: HotelDataType) => HotelSnapshotInType;
+type TransformDataToModelType = (data: Hotel) => HotelSnapshotInType;
 
 export const transformDataToHotel: TransformDataToModelType = ({
   id,
-  name,
+  ...data
 }) => ({
   id: String(id),
-  name,
+  ...data,
   type: 'hotel',
 });

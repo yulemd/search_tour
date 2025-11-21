@@ -70,15 +70,18 @@ export const useSearchScreen = () => {
     enabled,
   });
 
-  if (searchData) {
-    tours.addList(searchData.results);
-  }
+  useEffect(() => {
+    if (searchData) {
+      tours.addList(searchData.results);
+    }
+  }, [searchData, tours]);
 
   const retrieveHotels = useCallback(() => {
     hotels.retrieveList(selectedCountryId);
   }, [hotels, selectedCountryId]);
 
   const hotelsList = hotels.getList();
+  const toursList = tours.getList();
 
   useEffect(() => {
     if (selectedCountryId && hotelsListExists) {
@@ -87,8 +90,63 @@ export const useSearchScreen = () => {
     retrieveHotels();
   }, [hotelsListExists, selectedCountryId, retrieveHotels]);
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '—';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('uk-UA', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+  };
+
+  const formatCurrency = (amount: number, currency: string) =>
+    new Intl.NumberFormat('uk-UA', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+
+  const toursToRender = useMemo(() => {
+    if (toursList.length === 0 || hotelsList.length === 0) {
+      return [];
+    }
+
+    const hotelsMap = new Map(hotelsList.map((hotel) => [hotel.id, hotel]));
+
+    const result = toursList
+      .map((tour) => {
+        const hotel = hotelsMap.get(tour.hotelID);
+
+        if (!hotel) {
+          return null;
+        }
+
+        return {
+          hotelName: hotel.name,
+          country: hotel.countryName,
+          city: hotel.cityName,
+
+          startDate: formatDate(tour.startDate),
+          endDate: formatDate(tour.endDate),
+          priceFormatted: formatCurrency(tour.amount, tour.currency),
+
+          hotelImage: hotel.img,
+          openPriceLink: `/tours/${tour.id}`,
+
+          tourId: tour.id,
+          hotelId: hotel.id,
+        };
+      })
+      .filter((item) => item !== null);
+
+    return result;
+  }, [toursList, hotelsList]);
+
   console.info('-------------------------------', tours.getList());
   console.info('+++++++++++++++++++++++++++++++', hotelsList);
+  console.info('________________________________', toursToRender);
 
   const searchPricesStatuses: SearchPricesStatusType = useMemo(() => {
     if (!value) {
