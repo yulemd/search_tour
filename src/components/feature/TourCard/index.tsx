@@ -11,18 +11,22 @@ import type { TourToRender } from '@/screens/SearchScreen/types';
 
 interface TourCardProps {
   props: TourToRender;
+  handleTourClick?: (priceId: string, hotelId: string) => void;
 }
 
 export const TourCard: FC<TourCardProps> = ({
   props: {
     city,
     country,
+    hotelId,
     hotelImage,
     hotelName,
     flag,
     priceFormatted,
     startDate,
+    tourId,
   },
+  handleTourClick = () => {},
 }) => (
   <TourCardContainer>
     <Layout variant="card">
@@ -40,7 +44,7 @@ export const TourCard: FC<TourCardProps> = ({
     </Layout>
     <Button
       id="search_button"
-      onClick={() => {}}
+      onClick={() => handleTourClick(tourId, hotelId)}
       variant="link"
       title={'Відкрити ціну'}
     />

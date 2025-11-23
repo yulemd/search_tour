@@ -14,6 +14,8 @@ export const Hotel = types
     countryId: types.optional(types.string, ''),
     countryName: types.optional(types.string, ''),
     type: types.optional(GeoSearchOptionType, 'hotel'),
+    description: types.optional(types.string, ''),
+    services: types.optional(types.frozen<Record<string, string>>(), {}),
   })
   .actions((self) => ({
     retrieveItem: flow(function* retrieveItem() {
@@ -29,5 +31,19 @@ export const Hotel = types
       if (snapshot.id) {
         applySnapshot(self, snapshot);
       }
+    }),
+  }))
+  .views((self) => ({
+    getItem: () => ({
+      id: self.id,
+      name: self.name,
+      img: self.img,
+      cityId: self.cityId,
+      cityName: self.cityName,
+      countryId: self.countryId,
+      countryName: self.countryName,
+      type: self.type,
+      description: self.description,
+      services: self.services,
     }),
   }));

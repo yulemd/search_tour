@@ -23,7 +23,7 @@ export type TourToRender = {
 
 export interface SearchScreenProps {
   closeDropdown: () => void;
-  searchPricesStatuses?: SearchPricesStatusType;
+  handleTourClick?: (tourId: string, hotelId: string) => void;
   onChangeInput: OnChangeType;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onOptionClick: (label: string) => void;
@@ -36,6 +36,7 @@ export interface SearchScreenProps {
     inputRef: React.RefObject<HTMLInputElement | null>;
     dropdownRef: React.RefObject<HTMLDivElement | null>;
   };
+  searchPricesStatuses?: SearchPricesStatusType;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   toursToRender?: TourToRender[];
   value: string;

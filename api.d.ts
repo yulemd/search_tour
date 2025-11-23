@@ -21,6 +21,8 @@ declare module './api' {
     cityName: string;
     countryId: string;
     countryName: string;
+    description?: string;
+    services?: Record<string, string>;
     type?: 'country' | 'city' | 'hotel';
   };
 

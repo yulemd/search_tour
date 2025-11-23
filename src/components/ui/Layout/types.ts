@@ -9,4 +9,5 @@ export type LayoutVariantType =
   | 'default'
   | 'heading'
   | 'input'
-  | 'main';
+  | 'main'
+  | 'row';

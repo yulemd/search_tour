@@ -5,6 +5,7 @@ import { DefaultLayout } from './DefaultLayout';
 import { HeadingLayout } from './HeadingLayout';
 import { InputLayout } from './InputLayout';
 import { MainLayout } from './MainLayout';
+import { RowLayout } from './RowLayout';
 
 import type { LayoutPropsType } from './types';
 
@@ -24,4 +25,5 @@ const LayoutComponents = {
   heading: HeadingLayout,
   input: InputLayout,
   main: MainLayout,
+  row: RowLayout,
 };

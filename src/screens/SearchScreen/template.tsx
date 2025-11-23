@@ -11,6 +11,7 @@ import type { SearchScreenProps } from './types';
 export const SearchScreenTemplate: FC<SearchScreenProps> = ({
   searchPricesStatuses,
   toursToRender = [],
+  handleTourClick,
   ...props
 }) => {
   const status = getSearchPricesStatus(searchPricesStatuses);
@@ -26,7 +27,11 @@ export const SearchScreenTemplate: FC<SearchScreenProps> = ({
         <Layout variant="main">
           <ToursContainer>
             {toursToRender.map((hotel) => (
-              <TourCard key={hotel.hotelId} props={hotel} />
+              <TourCard
+                key={hotel.hotelId}
+                props={hotel}
+                handleTourClick={handleTourClick}
+              />
             ))}
           </ToursContainer>
         </Layout>

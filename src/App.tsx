@@ -1,12 +1,19 @@
+import { observer } from 'mobx-react-lite';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+
 import { SearchScreen } from './screens';
 
-import { observer } from 'mobx-react-lite';
-
 import { rootStore, RootStoreContext } from './models';
+import { TourDetailsScreen } from './screens/TourDetailsScreen';
 
 const App = observer(() => (
   <RootStoreContext.Provider value={rootStore}>
-    <SearchScreen />
+    <Router>
+      <Routes>
+        <Route path="/search_tour" element={<SearchScreen />} />
+        <Route path="/tour/:tourId/:hotelId" element={<TourDetailsScreen />} />
+      </Routes>
+    </Router>
   </RootStoreContext.Provider>
 ));
 
