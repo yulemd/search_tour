@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { stopSearchPrices } from '@/api';
 import { getSearchPricesStatuses, getToursToRender } from '@/helpers';
 import { useSearchPrices } from '@/hooks/useSearchPrices';
 import { useStartSearchPrices } from '@/hooks/useStartSearchPrices';
@@ -15,6 +16,8 @@ export const useSearchScreen = () => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState('');
+  const [activeToken, setActiveToken] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const countriesListExists = root.countriesListExists();
   const geoEntitiesListExists = root.geoEntitiesListExists();
@@ -157,14 +160,24 @@ export const useSearchScreen = () => {
     closeDropdown();
   };
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     if (!value) return;
     const { id: countryId } = countriesList.find((c) => c.name === value) || {
       id: '',
     };
 
+    if (activeToken) {
+      setIsCancelling(true);
+      try {
+        await stopSearchPrices(activeToken);
+      } catch (e) {
+        console.info(e);
+      }
+      setIsCancelling(false);
+      setActiveToken(null);
+    }
     setSelectedCountryId(`${countryId}`);
-  }, [countriesList, value]);
+  }, [countriesList, value, activeToken]);
 
   return {
     closeDropdown,
@@ -180,5 +193,6 @@ export const useSearchScreen = () => {
     setValue,
     toursToRender,
     value,
+    isCancelling,
   };
 };
